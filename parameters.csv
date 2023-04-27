@@ -1,0 +1,13 @@
+﻿parameters,value
+param_min_volt,-0.1
+param_max_volt,1.2
+param_steps_no,120
+param_cell_area,0.09
+param_scan_rate,500
+param_irr,1
+param_temp,25
+param_curr_lim,60
+param_delay,1
+param_multidelay,0
+param_voltrange,2
+param_currentrange,0.1
