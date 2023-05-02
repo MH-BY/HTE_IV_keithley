@@ -29,6 +29,8 @@ import csv
 
 
 # Initialize the parameter variables
+save_directory ="/Users/ebeem/Documents/GitHub/IV-swipe-Keithley2450/data"
+resource ="USB0::0x05E6::0x2450::04506925::INSTR"
 param_min_volt = None
 param_max_volt = None
 param_steps_no = None
@@ -41,6 +43,8 @@ param_delay = None
 param_multidelay = None
 param_voltrange = None
 param_currentrange = None
+
+smu = None
 
 # Read the measurement parameters from the CSV file
 filename = 'parameters.csv'
@@ -76,6 +80,27 @@ with open(filename, 'r') as file:
 
 #------------------------------
 
+
+
+def_rm = pyvisa.ResourceManager()
+smu = def_rm.open_resource(resource)
+
+#to check the connection
+# instruments = np.array(rm.list_resources())
+
+# for instrument in instruments:
+#     my_instrument = rm.open_resource(instrument)
+#     try:
+#         identity = my_instrument.query('*IDN?')
+#         print("Resource: '" + instrument + "' is")
+#         print(identity + '\n')
+#     except visa.VisaIOError:
+#         print('No connection to: ' + instrument)
+
+
+
+
+#---------------
 
 # To add new user to the 'Operator Name' dropdown menu:
 #   1.) Press 'Ctrl' + 'F'
@@ -115,6 +140,10 @@ class Application(tk.Tk):
         self.is_done = 0
         self.stop_thread_queue = queue.Queue()
         
+        
+        self.after(10, self.selectResource)
+        #autoclick save directory
+        self.after(10, self.dir_invoke)
         #autoclick check function auto_click(self)
         self.after(1000, self.auto_click) #1000 ms
         
@@ -415,8 +444,9 @@ class Application(tk.Tk):
         Gets the directory path for the exporting of files. 
         Called by the savedir button.
         """
-
-        self.directory = tkinter.filedialog.askdirectory()
+        
+        self.directory = save_directory
+        #self.directory = tkinter.filedialog.askdirectory()
         print("Selected directory is: " + str(self.directory))
         self.directory_fill.set(self.directory)
 
@@ -455,8 +485,9 @@ class Application(tk.Tk):
         """
         Function to select the instrument to use once an option in OptionMenu is clicked.
         """
-
-        rsc = self.selected_resc.get()
+        
+        rsc = resource
+        #rsc = self.selected_resc.get() #used when manually selected from GUI
         print("Selected resource: " + str(rsc))
         
 
@@ -1015,6 +1046,9 @@ class Application(tk.Tk):
             textbox.insert('end', "\n")
             textbox.see("end")
 
+    #auto invoke the choice of directory    
+    def dir_invoke(self):
+        self.savedir.invoke()
     
     #make the start_run button autoclicked
     def auto_click(self):
